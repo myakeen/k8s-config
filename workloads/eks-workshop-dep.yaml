@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-workshop
+  namespace: eks-workshop
+  labels:
+    app: eks-workshop
+  annotations:
+    # Container Image Automated Updates
+    flux.weave.works/automated: "true"
+    # do not apply this manifest on the cluster
+    #flux.weave.works/ignore: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eks-workshop
+  template:
+    metadata:
+      labels:
+        app: eks-workshop
+    spec:
+      containers:
+      - name: eks-workshop
+        image: 975092206383.dkr.ecr.us-east-1.amazonaws.com/eks-workshop:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
